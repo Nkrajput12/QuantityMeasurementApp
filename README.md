@@ -9,18 +9,33 @@ The application follows an evolutionary path:
 3. Arithmetic: Supporting mathematical operations across units.
 ------------------------------------------------------------------------------------------------------------------------------------------
 🚀 Use Case 1: Feet Measurement Equality
-The goal of this use case is to ensure that two measurement objects representing Feet are compared based on their values rather than their memory references.
+UC1: Feet Measurement Equality
+1. Objective: Compare two Feet objects based on their values rather than their memory addresses (Value-based equality).
+2. Implementation: Overriding .Equals() and .GetHashCode() in a dedicated Feet class.
+3. Key Learning: Understanding the difference between Reference Equality and Value Equality.
+4. Branch: feature/UC1-FeetMeasurementEquality
 
-Key Features
-1. Encapsulation: Measurement values are stored in private, immutable fields.
-2. Value-Based Equality: Overridden Equals() and GetHashCode() methods.
-3. Type Safety: Ensures that a Feet object can only be compared to another Feet object.
-4. Layered Architecture: Separated into Models, Services, and Tests.
+------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 2: Feet and Inch Measurement Equality
+1. Objective: Introduce a second unit, Inches, and ensure 1 inch equals 1 inch.
+2. Implementation: Created a parallel Inches class with similar equality logic.
+3. Key Learning: Type safety—ensuring Feet cannot be compared to Inches without a conversion layer.
+4. Branch: feature/UC2-FeetAndInchesMeasurementEquality
 
-🛠 Project Structure
-The project follows a clean separation of concerns:
+------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 3: Generic Scaling & Cross-Unit Comparison
+1. Objective: Refactor the codebase to eliminate duplication (DRY principle) and allow 1 Feet == 12 Inches.
+2. Major Refactoring:
+    1. Unified Model: Replaced separate unit classes with a single Quantity class.
+    2. Base Unit Normalization: All units are converted to a common base (Inches) before comparison.
+    3. Precision Handling: Introduced an Epsilon (0.001) to handle floating-point rounding errors.
+3. Branch: feature/UC3-GenericLength
 
-1. Models: Contains the Feet class with the equality logic.
-2. Service: Contains FeetUtil to handle business operations.
-3. Tests: NUnit project containing all validation test cases.
-4. UI: Console-based menu for manual verification.
+------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 4: Extended Unit Support (Yards & Centimeters)
+1. Objective: Demonstrate that the generic design from UC3 can scale effortlessly without changing business logic.
+2. New Units Added: * Yards: (1 yd = 36 in) Centimeters: (1 cm = 0.393701 in)
+3. Engineering Principle: Open/Closed Principle—The system is open for extension (adding units) but closed for modification (the Quantity class logic remains untouched).
+4. Branch: feature/UC4-ExtendedUnitSupport
+
+------------------------------------------------------------------------------------------------------------------------------------------
