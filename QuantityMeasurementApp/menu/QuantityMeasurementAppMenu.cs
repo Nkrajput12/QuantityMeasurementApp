@@ -49,7 +49,7 @@ public class QuantityMeasurementAppMenu
 
     /// <summary>
     /// Captures numerical input from the console, instantiates Feet objects, 
-    /// and invokes FeetUtil to compare them for equality.
+    /// and invokes QuantityMeasurementService to compare them for equality.
     /// and capture the Exceptions like Format and General exception
     /// </summary>
     private void CompareFeetInput()
@@ -80,7 +80,7 @@ public class QuantityMeasurementAppMenu
 
     /// <summary>
     /// Captures numerical input from the console, instantiates Inches objects, 
-    /// and invokes InchesUtil to compare them for equality.
+    /// and invokes QuantityMeasurementService to compare them for equality.
     /// and capture the Exceptions like Format and General exception
     /// </summary>
     public void CompareInchesInput()
