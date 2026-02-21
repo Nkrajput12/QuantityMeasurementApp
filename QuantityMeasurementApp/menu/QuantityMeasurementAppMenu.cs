@@ -10,7 +10,7 @@ using QuantityMeasurementApp.service;
 /// </summary>
 public class QuantityMeasurementAppMenu
 {
-    private FeetUtil feet = new FeetUtil();
+    private QuantityMeasurementService service = new QuantityMeasurementService();
     
     /// <summary>
     /// Starts the main application loop, displaying the menu options 
@@ -44,7 +44,7 @@ public class QuantityMeasurementAppMenu
 
     /// <summary>
     /// Captures numerical input from the console, instantiates Feet objects, 
-    /// and invokes FeetUtil to compare them for equality.
+    /// and invokes QuantityMeasurementService to compare them for equality.
     /// and capture the Exceptions like Format and General exception
     /// </summary>
     private void CompareFeetInput()
@@ -59,7 +59,7 @@ public class QuantityMeasurementAppMenu
             Feet feet1 = new Feet(val1);
             Feet feet2 = new Feet(val2);
 
-            bool Equal = feet.CompareFeet(feet1,feet2);
+            bool Equal = service.CompareFeet(feet1,feet2);
 
             Console.WriteLine(Equal ? "The Measurement are Equal" : "The Measurement are not Equal");
         }
