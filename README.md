@@ -39,3 +39,12 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC4-ExtendedUnitSupport
 
 ------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 5: Unit-to-Unit Conversion
+1. Objective: Enable functional conversion between length units (e.g., Yards to Feet) rather than just checking equality.
+2. Implementation:
+   1. Base Unit Normalization: Converts source to Inches, then scales to target.
+   2. Immutability: ConvertTo() returns a new object instead of modifying the existing one.
+   3. Method Overloading: Provided both static (raw math) and instance (object-based) conversion methods.
+3. Branch: feature/UC5-UnitConversion
+
+------------------------------------------------------------------------------------------------------------------------------------------
