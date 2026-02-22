@@ -56,6 +56,15 @@ UC1: Feet Measurement Equality
    2. Immutability: Returns a new instance; original objects remain unchanged.
    3. Math Logic: Supports Commutativity ($A + B = B + A$) and the Identity Element (adding zero).
    4. Validation: Implements guard clauses to throw ArgumentNullException for null inputs.
-3. Branch: feature/UC6-ArithmeticAddition
+3. Branch: feature/UC6-AdditionofTwoLengthUnits
 
 ------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 7: Explicit Target Unit Addition
+1. Objective: Provide full control over the output unit, allowing the addition of two different units to be represented in a third, unrelated target unit.
+2. Implementation: * Re-scaling Logic: Extends arithmetic by dividing the base-unit sum by the target unit’s conversion factor
+   1. .Method Overloading: Added Add(other, targetUnit) to support both implicit (UC6) and explicit (UC7) outputs.
+   2. Precision Tolerance: Utilized Epsilon ($0.001$) to maintain mathematical accuracy during floating-point conversions.
+3. Key Learning: Decoupling internal calculation (Normalization) from external representation (Target Scaling)
+4. .Branch: feature/UC7-TargetUnitAddition
+
+-----------------------------------------------------------------------------------------------------------------------------------------
