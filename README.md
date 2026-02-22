@@ -48,3 +48,14 @@ UC1: Feet Measurement Equality
 3. Branch: feature/UC5-UnitConversion
 
 ------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 6: Length Addition
+
+1. Objective: UC6 enables functional arithmetic between different length units. The system converts operands to a base unit, sums them, and returns a new Quantity in the unit of the first operand.
+2. Key Implementation
+   1. Normalization: Converts both inputs to Inches before summation to ensure accuracy.
+   2. Immutability: Returns a new instance; original objects remain unchanged.
+   3. Math Logic: Supports Commutativity ($A + B = B + A$) and the Identity Element (adding zero).
+   4. Validation: Implements guard clauses to throw ArgumentNullException for null inputs.
+3. Branch: feature/UC6-ArithmeticAddition
+
+------------------------------------------------------------------------------------------------------------------------------------------
