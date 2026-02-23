@@ -68,3 +68,12 @@ UC1: Feet Measurement Equality
 4. .Branch: feature/UC7-TargetUnitAddition
 
 -----------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 8: Architectural Refactoring & Responsibility Delegation
+1. Objective: Refactor the design to eliminate circular dependencies and adhere to the Single Responsibility Principle (SRP) by moving conversion logic out of the Quantity class and into a standalone unit model.
+2. implementation: * Standalone Enum: Extracted LengthUnit into a top-level enum, removing it from the scope of the Quantity class.
+   1. Delegation Pattern: Assigned the responsibility of "Normalization" to the unit itself using extension methods (ConvertToBase and ConvertFromBase).
+   2. Simplified Model: Refactored Quantity to act as a coordinator that delegates math to the unit extensions, making the class lean and category-agnostic.
+3. Key Learning: Understanding how to separate Domain Logic (addition/equality) from Data Representation (unit conversion factors) to improve system scalability and maintainability.
+4. Branch: feature/UC8-StandaloneUnit
+
+-----------------------------------------------------------------------------------------------------------------------------------------
