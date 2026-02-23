@@ -77,3 +77,14 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC8-StandaloneUnit
 
 -----------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 9: Weight Measurement & Category Isolation
+1. Objective: Expand the application beyond length by introducing Weight as a new measurement category. The goal is to demonstrate that the architecture from UC8 is scalable and type-safe across different physical dimensions.
+2. Key Implementation:
+   1. Independent Category: Created a QuantityWeight class and a WeightUnit enum to ensure weight measurements are isolated from length.
+   2. Dimension Protection: Implemented "Category Type Safety" within the .Equals() method to prevent logical errors, such as comparing Kilograms to Feet.
+   3. Base Unit Normalization: Established Kilograms (kg) as the internal base unit ($1.0$), with Grams ($0.001$) and Pounds ($0.453592$) as scaled units.
+   4. Precision Engineering: Applied a $0.001$ epsilon tolerance to handle the repeating decimals inherent in Metric-to-Imperial (Pounds to Kg) conversions.
+3. Engineering Principle: Interface Segregation & Domain Isolation—ensuring that while the logic patterns (addition/conversion) are similar, the data domains remain strictly separated to maintain mathematical integrity.
+4. Branch: feature/UC9-Weight-Measurement
+
+------------------------------------------------------------------------------------------------------------------------------------------
