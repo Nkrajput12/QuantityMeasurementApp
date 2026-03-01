@@ -99,3 +99,12 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC10-GenericQuantity
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 11: Volume Measurement & Multi-Category Scaling
+1. Objective: UC11 extends the application to support Volume (Litres, Millilitres, Gallons). This use case is the ultimate validation of the Generic Architecture from UC10, proving the system can scale to a third physical dimension with zero modifications to the core Quantity<T> engine.
+2. Key Implementation:
+   1. Standalone Volume Enum: Created a VolumeUnit enum implementing the IMeasurable pattern. This ensures Volume remains a separate, non-interoperable category from Length and Weight.
+   2. Base Unit Normalization: Established Litre (L) as the internal base unit ($1.0$), with Millilitres ($0.001$) and Gallons ($3.78541$) as scaled units.
+   3. Plug-and-Play Integration: Demonstrated that the generic Quantity<TUnit> class automatically handles Volume equality ($1\text{ L} == 1000\text{ mL}$) and addition without needing new logic.
+   4. Dimension Protection: Leveraged .NET Generics to ensure that a Quantity<VolumeUnit> cannot be compared or added to a Quantity<LengthUnit> at compile-time, maintaining mathematical integrity.
+3. Engineering Principle: Open/Closed Principle—The system is "Open" for new categories (Volume) but "Closed" for modification, as the primary business logic in the Quantity class remains untouched.
+4. Branch: feature/UC11-VolumeMeasurement
