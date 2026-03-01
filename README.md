@@ -108,3 +108,16 @@ UC1: Feet Measurement Equality
    4. Dimension Protection: Leveraged .NET Generics to ensure that a Quantity<VolumeUnit> cannot be compared or added to a Quantity<LengthUnit> at compile-time, maintaining mathematical integrity.
 3. Engineering Principle: Open/Closed Principle—The system is "Open" for new categories (Volume) but "Closed" for modification, as the primary business logic in the Quantity class remains untouched.
 4. Branch: feature/UC11-VolumeMeasurement
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 12: Subtraction, Division & Arithmetic Scaling
+1. Objective: Complete the mathematical engine by introducing Subtraction and Division operations. This use case ensures that the generic architecture can handle non-commutative operations while maintaining physical and dimensional integrity.
+2. Key Implementation:
+   1. Normalization-Based Subtraction: Implements Subtract(other) by converting both quantities to a base unit, calculating the difference, and returning a new Quantity<TUnit>.
+   2. Dimensionless Division: Unlike addition or subtraction, the Divide(other) method returns a double (Scalar). This follows the physics principle that dividing two like-dimensions (e.g., Length / Length) results in a dimensionless ratio.
+   3. Implicit & Explicit Output: Supports both implicit results (returning the unit of the first operand) and explicit results (re-scaling the difference to a user-specified target unit).
+   4. Safety & Validation: Implements strict "Division by Zero" guards and ensures that the system throws an ArgumentException if a user attempts to subtract Weight from Length.
+3. Engineering Principle: Mathematical Soundness & Immutability—ensuring that operations do not modify the original objects and that the return types (Quantity vs. Scalar) correctly reflect the dimensional results of the calculation.
+4. Branch: feature/UC12-SubtractionAndDivision
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
