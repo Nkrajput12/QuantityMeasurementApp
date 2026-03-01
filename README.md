@@ -88,3 +88,14 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC9-Weight-Measurement
 
 ------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 10: Generic Architecture & Unified Measurement
+1. Objective: The final evolutionary step of the application. The goal of UC10 is to achieve the Ultimate DRY (Don't Repeat Yourself) principle by collapsing category-specific classes into a single, highly flexible Generic Quantity Model.  
+2. Key Implementation:
+   1. Generic Type Constraints: Refactored the Quantity class to use a generic parameter <TUnit>. By applying the constraint where TUnit : struct, Enum, the class       becomes a universal container for any measurement category.
+   2. Bridge Logic: Implemented a "Static Bridge" using pattern matching. The generic Quantity<TUnit> class identifies the specific Enum type at runtime to delegate mathematical normalization to the appropriate static extension methods.
+   3. Unified Service Layer: Refactored the QuantityMeasurementService to be entirely generic. A single set of Compare<T>, Convert<T>, and Add<T> methods now services Length, Weight, and all future dimensions.
+   4. Type Safety: Leverages the .NET runtime's ability to distinguish between Quantity<LengthUnit> and Quantity<WeightUnit>, physically preventing the logical error of adding Kilograms to Feet.
+3. Engineering Principle: Parametric Polymorphism—demonstrating that new categories (Volume, Temperature) can be added by simply creating a new Enum. The core Quantity engine requires zero modifications to scale.
+4. Branch: feature/UC10-GenericQuantity
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
