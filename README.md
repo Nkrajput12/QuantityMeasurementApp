@@ -121,3 +121,14 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC12-SubtractionAndDivision
 
 --------------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 13: Centralized Arithmetic & DRY Refactoring
+1. Objective: Refactor the Quantity<TUnit> class to eliminate code duplication across all mathematical operations. The goal is to adhere to the DRY (Don't Repeat Yourself) principle by consolidating validation and normalization into a single internal engine.
+2. Key Implementation:
+   1. Internal Arithmetic Engine: Introduced a private ArithmeticOperation enum and a central PerformBaseArithmetic method to handle all math logic in one place.
+   2. Unified Validation: Consolidated null checks and category compatibility verification into a single "Gatekeeper" logic, ensuring consistent error reporting.
+   3. Normalization Consolidation: All operations now share the same internal pipeline for converting operands to base units, reducing the risk of divergent math logic.
+   4. Precision & Scaling: Integrated UC12's rounding logic directly into the centralized workflow, ensuring consistent formatting for all returned quantities.
+2. Engineering Principle: Abstraction & Maintainability—Demonstrating that as a system grows, the internal code should become more consolidated. By centralizing the "how" (calculation), the "what" (public API) becomes cleaner and easier to test.
+4. Branch: feature/UC13-CentralizedArithmetic
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
