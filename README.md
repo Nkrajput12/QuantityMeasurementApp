@@ -132,3 +132,14 @@ UC1: Feet Measurement Equality
 4. Branch: feature/UC13-CentralizedArithmetic
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 14: Temperature Measurement
+1. Objective: Extend the application to support Temperature (Celsius, Fahrenheit, Kelvin). Address a unique domain challenge: while temperatures can be added or subtracted to represent physical differences, dividing them is mathematically and physically meaningless.
+2. Key Implementation:
+   1. Non-Linear Conversion: Implemented offset-based conversion formulas (e.g., Fahrenheit to Celsius) via the TemperatureUnitExtension, handling the fact that temperature doesn't scale from an absolute zero in the same way Length or Weight does.
+   2. Operation Gatekeeper: Modified the central PerformBaseArithmetic engine to act as a gatekeeper. It dynamically intercepts and blocks mathematically invalid operations (like Divide) specifically for TemperatureUnit, throwing a precise InvalidOperationException.
+   3. Domain-Specific Rules: Permitted Addition and Subtraction for temperatures to represent valid temperature differences, successfully tailoring the generic math engine to specific physical constraints.
+   4. Exception Handling: Ensured that unsupported operations throw clear, descriptive exceptions rather than returning invalid or "dummy" data, maintaining the integrity of the system's output.
+3. Engineering Principle: Domain-Driven Design & Exception Safety—ensuring the software model accurately reflects the strict physical laws of the measurement domain, and proving that a generic architecture (Quantity<TUnit>) can still enforce category-specific operational rules.
+4. Branch: feature/UC14-TemperatureMeasurement
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
