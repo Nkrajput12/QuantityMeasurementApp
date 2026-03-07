@@ -1,0 +1,180 @@
+using System;
+using QuantityMeasurementApp.models;
+using QuantityMeasurementApp.Interface;
+
+namespace QuantityMeasurementApp.Models
+{
+    /// <summary>
+    /// UC10: Represents a generic quantity that handles different unit categories (Length, Weight, etc.).
+    /// This class uses generic type constraints to ensure only Enums can be used as units.
+    /// </summary>
+    public sealed class Quantity<TUnit>
+        where TUnit : struct, Enum
+    {
+        // Used for floating-point comparison to handle precision issues
+        private const double Epsilon = 1e-6;
+
+        /// <summary> Gets the numeric value of the quantity. </summary>
+        public double Value { get; }
+
+        /// <summary> Gets the specific unit of the quantity. </summary>
+        public TUnit Unit { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the Quantity class.
+        /// </summary>
+        /// <param name="value">The magnitude of the measurement.</param>
+        /// <param name="unit">The measurement unit.</param>
+        /// <exception cref="ArgumentException">Thrown if value is NaN or Infinity.</exception>
+        public Quantity(double value, TUnit unit)
+        {
+            if (!double.IsFinite(value))
+                throw new ArgumentException("Invalid numeric value.");
+
+            Value = value;
+            Unit = unit;
+        }
+
+        //Enum for arithmetic opr.
+        private enum ArithmeticOperation { Add, Subtract, Divide }
+
+        /// <summary>
+        /// This single method handles all Validation, Normalization, and Calculation.
+        /// It eliminates code duplication across Add, Subtract, and Divide.
+        /// </summary>
+        private double PerformBaseArithmetic(Quantity<TUnit> other, ArithmeticOperation operation)
+        {
+            //Validation
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            if (!this.Unit.GetType().Equals(other.Unit.GetType()))
+                throw new ArgumentException("Incompatible measurement categories.");
+
+            // Normalization
+            double base1 = this.ToBaseUnit();
+            double base2 = other.ToBaseUnit();
+
+            // Operations
+            return operation switch
+            {
+                ArithmeticOperation.Add => base1 + base2,
+                ArithmeticOperation.Subtract => base1 - base2,
+                ArithmeticOperation.Divide => Math.Abs(base2) < Epsilon 
+                    ? throw new ArithmeticException("Cannot divide by zero.") 
+                    : base1 / base2,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        /// <summary>
+        /// Converts the current quantity value to its base unit representation.
+        /// (e.g., Feet to Inches or Kilograms to Grams).
+        /// </summary>
+        /// <returns>The value converted to base unit as a double.</returns>
+        private double ToBaseUnit()
+        {
+            
+            if (Unit is LengthUnit l) return l.ConvertToBase(Value);
+            if (Unit is WeightUnit w) return w.ConvertToBase(Value);
+            if (Unit is VolumeUnit v) return v.ConvertToBase(Value);
+            
+            throw new InvalidOperationException("Unsupported Unit Category");
+        }
+
+        /// <summary>
+        /// Converts the current quantity into a new target unit within the same category.
+        /// </summary>
+        /// <param name="target">The target unit to convert to.</param>
+        /// <returns>A new Quantity object in the target unit.</returns>
+        public Quantity<TUnit> ConvertTo(TUnit target)
+        {
+            double baseValue = ToBaseUnit();
+            double converted = 0;
+
+            if (target is LengthUnit l) converted = LengthUnitExtensions.ConvertFromBase(l, baseValue);
+            else if (target is WeightUnit w) converted = WeightUnitExtension.ConvertFromBase(w, baseValue);
+            else if (target is VolumeUnit v) converted = VolumeUnitExtension.ConvertFromBase(v, baseValue);
+
+            return new Quantity<TUnit>(converted, target);
+        }
+
+        /// <summary>
+        /// This Method allow the subtraction between two Quantity and return the 
+        /// base unit
+        /// <summary>
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other)
+        {
+            return Subtract(other, this.Unit); // Default to first operand's unit
+        }
+
+        //This method is a overload of previous method and return the specific unit after subtraction
+        public Quantity<TUnit> Subtract(Quantity<TUnit> other, TUnit? targetUnit = null)
+        {
+            double result = PerformBaseArithmetic(other, ArithmeticOperation.Subtract);
+            // Consistent rounding for subtraction
+            return CreateFromBase(Math.Round(result, 2), targetUnit ?? this.Unit);
+        }
+
+        //This method allow Division between two unit
+        public double Divide(Quantity<TUnit> other)
+        {
+            return PerformBaseArithmetic(other, ArithmeticOperation.Divide);
+        }
+
+        /// <summary>
+        /// Adds another quantity to this one, returning the result in the current unit.
+        /// </summary>
+        public Quantity<TUnit> Add(Quantity<TUnit> other)
+        {
+            return Add(other, this.Unit);
+        }
+
+        public Quantity<TUnit> Add(Quantity<TUnit> other, TUnit? targetUnit = null)
+        {
+            double result = PerformBaseArithmetic(other, ArithmeticOperation.Add);
+            return CreateFromBase(result, targetUnit ?? this.Unit);
+        }
+
+
+        private Quantity<TUnit> CreateFromBase(double baseValue, TUnit target)
+        {
+            double converted = 0;
+            if (target is LengthUnit l) converted = l.ConvertFromBase(baseValue);
+            else if (target is WeightUnit w) converted = WeightUnitExtension.ConvertFromBase(w, baseValue);
+            else if (target is VolumeUnit v) converted = VolumeUnitExtension.ConvertFromBase(v, baseValue);
+
+            return new Quantity<TUnit>(converted, target);
+        }
+
+        /// <summary>
+        /// Determines if two quantities are equal by comparing their base unit values.
+        /// </summary>
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Quantity<TUnit> other)
+                return false;
+
+            return Math.Abs(this.ToBaseUnit() - other.ToBaseUnit()) < Epsilon;
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToBaseUnit().GetHashCode();
+        }
+
+        /// <summary>
+        /// Returns a string representing the quantity and its unit symbol.
+        /// </summary>
+        public override string ToString()
+        {
+            string symbol = "";
+            if (Unit is LengthUnit l) symbol = l.GetSymbol();
+            else if (Unit is WeightUnit w) symbol = w.GetSymbol();
+            else if (Unit is VolumeUnit v) symbol = v.GetSymbol();
+
+            return $"{Value} {symbol}";
+        }
+    }
+}
