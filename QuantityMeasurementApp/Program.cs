@@ -1,26 +1,25 @@
-﻿using QuantityMeasurementApp.Factories;
-using QuantityMeasurementApp.Interfaces;
+﻿using QuantityMeasurementApp.Controllers;
+using QuantityMeasurementBusinessLayer.Services;
+using QuantityMeasurementRepoLayer.Repositories;
+using QuantityMeasurementRepoLayer.Interfaces;
 
 namespace QuantityMeasurementApp
 {
-    /// <summary>
-    /// Entry point of the Quantity Measurement application.
-    /// Initializes required components using the factory pattern
-    /// and starts the application menu.
-    /// </summary>
-    internal class Program
+    public class Program
     {
-        /// <summary>
-        /// Application starting point. Creates the menu using MenuFactory
-        /// and runs the main application menu.
-        /// </summary>
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            IMenuFactory factory = new MenuFactory();
+            // 1. Create Repo
+            ICacheRepository cacheRepo = new InMemoryCacheRepository();
+            
+            // 2. Inject Repo into Service
+            IQuantityMeasurementService service = new QuantityMeasurementService(cacheRepo);
+            
+            // 3. Inject Service into Controller
+            QuantityMeasurementController controller = new QuantityMeasurementController(service);
 
-            IQuantityMeasurementAppMenu menu = factory.CreateMenu();
-
-            menu.Run();
+            // 4. Run App
+            controller.Run();
         }
     }
 }

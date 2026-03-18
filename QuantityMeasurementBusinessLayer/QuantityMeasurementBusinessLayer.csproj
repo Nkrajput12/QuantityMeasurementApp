@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuantityMeasurementModelLayer\QuantityMeasurementModelLayer.csproj" />
+    <ProjectReference Include="..\QuantityMeasurementRepoLayer\QuantityMeasurementRepoLayer.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

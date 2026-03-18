@@ -1,102 +1,104 @@
 using System;
-using QuantityMeasurementModelLayer.Models;
-using QuantityMeasurementModelLayer.Enums;
-using QuantityMeasurementModelLayer.Interfaces;
+using System.Collections.Generic;
 using QuantityMeasurementModelLayer.DTOs;
-using QuantityMeasurementBusinessLayer.Interfaces;
+using QuantityMeasurementModelLayer.Enums;
+using QuantityMeasurementRepoLayer.Interfaces;
 
 namespace QuantityMeasurementBusinessLayer.Services
 {
     public class QuantityMeasurementService : IQuantityMeasurementService
     {
-        private IUnitConverter<T> ResolveConverter<T>() where T : struct, Enum
+        private readonly ICacheRepository _cacheRepo;
+        private readonly LengthUnitConverter _lengthConv = new LengthUnitConverter();
+        private readonly WeightUnitConverter _weightConv = new WeightUnitConverter();
+        private readonly VolumeUnitConverter _volumeConv = new VolumeUnitConverter();
+        private readonly TemperatureUnitConverter _tempConv = new TemperatureUnitConverter();
+
+        // Constructor Injection for the Cache Repo!
+        public QuantityMeasurementService(ICacheRepository cacheRepo)
         {
-            if (typeof(T) == typeof(LengthUnit))
-                return (IUnitConverter<T>)(object)new LengthUnitConverter();
+            _cacheRepo = cacheRepo;
+        }
 
-            if (typeof(T) == typeof(WeightUnit))
-                return (IUnitConverter<T>)(object)new WeightUnitConverter();
+        private double GetBaseValue<T>(QuantityDTO dto) where T : struct, Enum
+        {
+            T unit = Enum.Parse<T>(dto.Unit, true);
 
-            if (typeof(T) == typeof(VolumeUnit))
-                return (IUnitConverter<T>)(object)new VolumeUnitConverter();
+            if (typeof(T) == typeof(LengthUnit)) return _lengthConv.ConvertToBase((LengthUnit)(object)unit, dto.Value);
+            if (typeof(T) == typeof(WeightUnit)) return _weightConv.ConvertToBase((WeightUnit)(object)unit, dto.Value);
+            if (typeof(T) == typeof(VolumeUnit)) return _volumeConv.ConvertToBase((VolumeUnit)(object)unit, dto.Value);
+            if (typeof(T) == typeof(TemperatureUnit)) return _tempConv.ConvertToBase((TemperatureUnit)(object)unit, dto.Value);
 
+            throw new Exception("Unsupported Unit Category");
+        }
+
+        private QuantityDTO CreateFromBase<T>(double baseValue, string targetUnitStr) where T : struct, Enum
+        {
+            T target = Enum.Parse<T>(targetUnitStr, true);
+            double converted = 0;
+            string symbol = "";
+
+            if (typeof(T) == typeof(LengthUnit)) { converted = _lengthConv.ConvertFromBase((LengthUnit)(object)target, baseValue); symbol = _lengthConv.GetSymbol((LengthUnit)(object)target); }
+            else if (typeof(T) == typeof(WeightUnit)) { converted = _weightConv.ConvertFromBase((WeightUnit)(object)target, baseValue); symbol = _weightConv.GetSymbol((WeightUnit)(object)target); }
+            else if (typeof(T) == typeof(VolumeUnit)) { converted = _volumeConv.ConvertFromBase((VolumeUnit)(object)target, baseValue); symbol = _volumeConv.GetSymbol((VolumeUnit)(object)target); }
+            else if (typeof(T) == typeof(TemperatureUnit)) { converted = _tempConv.ConvertFromBase((TemperatureUnit)(object)target, baseValue); symbol = _tempConv.GetSymbol((TemperatureUnit)(object)target); }
+
+            return new QuantityDTO(Math.Round(converted, 2), symbol); // Storing symbol in the Unit field for display
+        }
+
+        public QuantityDTO Convert<T>(QuantityDTO source, string targetUnit) where T : struct, Enum
+        {
+            double baseValue = GetBaseValue<T>(source);
+            var result = CreateFromBase<T>(baseValue, targetUnit);
+
+            _cacheRepo.SaveToCache(new CacheRecordDto { OperationType = "Conversion", InputDetails = $"{source.Value} {source.Unit} to {targetUnit}", Result = $"{result.Value} {result.Unit}" });
+            return result;
+        }
+
+        public QuantityDTO Add<T>(QuantityDTO q1, QuantityDTO q2, string targetUnit) where T : struct, Enum
+        {
+            double base1 = GetBaseValue<T>(q1);
+            double base2 = GetBaseValue<T>(q2);
+            var result = CreateFromBase<T>(base1 + base2, targetUnit);
+
+            _cacheRepo.SaveToCache(new CacheRecordDto { OperationType = "Addition", InputDetails = $"{q1.Value} {q1.Unit} + {q2.Value} {q2.Unit}", Result = $"{result.Value} {result.Unit}" });
+            return result;
+        }
+
+        public QuantityDTO Subtract<T>(QuantityDTO q1, QuantityDTO q2, string targetUnit) where T : struct, Enum
+        {
+            double base1 = GetBaseValue<T>(q1);
+            double base2 = GetBaseValue<T>(q2);
+            var result = CreateFromBase<T>(base1 - base2, targetUnit);
+
+            _cacheRepo.SaveToCache(new CacheRecordDto { OperationType = "Subtraction", InputDetails = $"{q1.Value} {q1.Unit} - {q2.Value} {q2.Unit}", Result = $"{result.Value} {result.Unit}" });
+            return result;
+        }
+
+        public double Divide<T>(QuantityDTO q1, QuantityDTO q2) where T : struct, Enum
+        {
             if (typeof(T) == typeof(TemperatureUnit))
-                return (IUnitConverter<T>)(object)new TemperatureUnitConverter();
+                throw new InvalidOperationException("Temperature does not support division.");
 
-            throw new NotSupportedException($"Unsupported unit type {typeof(T).Name}");
+            double base1 = GetBaseValue<T>(q1);
+            double base2 = GetBaseValue<T>(q2);
+
+            if (Math.Abs(base2) < 1e-6) throw new DivideByZeroException("Cannot divide by zero.");
+            
+            double result = Math.Round(base1 / base2, 4);
+
+            _cacheRepo.SaveToCache(new CacheRecordDto { OperationType = "Division", InputDetails = $"{q1.Value} {q1.Unit} / {q2.Value} {q2.Unit}", Result = result.ToString() });
+            return result;
         }
 
-        private QuantityResultDto MapQuantityToDto<T>(Quantity<T> quantity) where T : struct, Enum
+        
+        public bool Compare<T>(QuantityDTO q1, QuantityDTO q2) where T : struct, Enum
         {
-            return new QuantityResultDto
-            {
-                Value = quantity.Value,
-                UnitSymbol = quantity.ToString().Split(' ')[1]
-            };
+            bool equal = Math.Abs(GetBaseValue<T>(q1) - GetBaseValue<T>(q2)) < 1e-6;
+            _cacheRepo.SaveToCache(new CacheRecordDto { OperationType = "Comparison", InputDetails = $"{q1.Value} {q1.Unit} == {q2.Value} {q2.Unit}", Result = equal.ToString() });
+            return equal;
         }
 
-        public ComparisonResultDto Compare<U>(Quantity<U> firstQuantity, Quantity<U> secondQuantity) where U : struct, Enum
-        {
-            if (firstQuantity == null || secondQuantity == null)
-                return new ComparisonResultDto { AreEqual = false };
-
-            return new ComparisonResultDto
-            {
-                AreEqual = firstQuantity.Equals(secondQuantity)
-            };
-        }
-
-        public QuantityResultDto DemonstrateConversion<U>(double numericValue, U sourceType, U targetType) where U : struct, Enum
-        {
-            var converter = ResolveConverter<U>();
-
-            Quantity<U> tempQuantity = new Quantity<U>(numericValue, sourceType, converter);
-            Quantity<U> converted = tempQuantity.ConvertTo(targetType);
-
-            return MapQuantityToDto(converted);
-        }
-
-        public QuantityResultDto DemonstrateConversion<U>(Quantity<U> originalQuantity, U desiredUnit) where U : struct, Enum
-        {
-            Quantity<U> resultQuantity = originalQuantity.ConvertTo(desiredUnit);
-
-            return MapQuantityToDto(resultQuantity);
-        }
-
-        public QuantityResultDto DemonstrateAddition<U>(Quantity<U> leftOperand, Quantity<U> rightOperand) where U : struct, Enum
-        {
-            Quantity<U> sum = leftOperand.Add(rightOperand);
-
-            return MapQuantityToDto(sum);
-        }
-
-        public QuantityResultDto DemonstrateAddition<U>(Quantity<U> leftOperand, Quantity<U> rightOperand, U resultUnit) where U : struct, Enum
-        {
-            Quantity<U> result = leftOperand.Add(rightOperand, resultUnit);
-
-            return MapQuantityToDto(result);
-        }
-
-        public QuantityResultDto Subtract<U>(Quantity<U> firstValue, Quantity<U> secondValue, U resultUnit) where U : struct, Enum
-        {
-            Quantity<U> difference = firstValue.Subtract(secondValue, resultUnit);
-
-            return MapQuantityToDto(difference);
-        }
-
-        public DivisionResultDto Divide<T>(double firstValue, T firstUnit, double secondValue, T secondUnit) where T : struct, Enum
-        {
-            var converter = ResolveConverter<T>();
-
-            Quantity<T> dividend = new Quantity<T>(firstValue, firstUnit, converter);
-            Quantity<T> divisor = new Quantity<T>(secondValue, secondUnit, converter);
-
-            double outcome = dividend.Divide(divisor);
-
-            return new DivisionResultDto
-            {
-                Ratio = outcome
-            };
-        }
+        public IEnumerable<CacheRecordDto> GetHistory() => _cacheRepo.GetAllHistory();
     }
 }
