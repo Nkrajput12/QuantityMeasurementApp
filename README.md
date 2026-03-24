@@ -165,3 +165,16 @@ UC1: Feet Measurement Equality
    4. Centralized Configuration: Extracted the database connection string into a dedicated DatabaseConfig class, creating a single source of truth for environment settings.
 3. Engineering Principle: Open/Closed Principle (OCP) & Dependency Inversion Principle (DIP)—Proving that the Data Access layer is "Open for extension" (adding SQL capabilities) but the Business layer is "Closed for modification" (the Service code remains completely untouched).
 4. Branch: [feature/UC16-DatabaseIntegration](https://github.com/Nkrajput12/QuantityMeasurementApp/tree/feature/UC16-DatabaseIntegration)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🚀 Use Case 17: Web API Transition & ASP.NET Core Integration
+1. Objective: Transform the application from a localized Console application into a distributed RESTful Web API. This step exposes the core measurement logic (comparison, conversion, and arithmetic) over HTTP, allowing any external client (web, mobile, or third-party system) to interact with the engine.
+2. Key Implementation:
+   1. API Controllers & Routing: Created a dedicated MeasurementController to handle incoming HTTP requests (GET, POST), mapping external JSON payloads to internal Data Transfer Objects (DTOs) seamlessly.
+   2. Built-in Dependency Injection: Upgraded the manual Composition Root from the console app into ASP.NET Core’s IServiceCollection (Program.cs). Automatically injected the Business Service, Cache Repository, and Database Repository using appropriate lifecycles (e.g., AddScoped, AddSingleton).
+   3. Configuration Management: Migrated the database connection string and environment variables from hardcoded classes into appsettings.json, utilizing the framework's IConfiguration for secure, centralized, and environment-agnostic setups.
+   4. Swagger UI Integration: Added OpenAPI/Swagger middleware to automatically generate interactive API documentation. This provides a clean web interface to test the measurement endpoints without needing a frontend or Postman.
+3. Engineering Principle: Client-Server Architecture & RESTful Design—Demonstrating the ultimate power of N-Tier architecture. Because the Business and Data layers were perfectly decoupled in UC15/16, the entire UI could be ripped out (Console to Web API) without modifying a single line of the underlying domain logic.
+4. Branch: [feature/UC17-ASP.NET-Framework-Integration](https://github.com/Nkrajput12/QuantityMeasurementApp/tree/feature/UC17-ASP.NET-Framework-Integration)
+
