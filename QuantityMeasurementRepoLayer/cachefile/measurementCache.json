@@ -1,0 +1,44 @@
+[
+  {
+    "OperationType": "Addition",
+    "InputDetails": "12 Inches \u002B 2 Feet",
+    "Result": "1 yd",
+    "Timestamp": "2026-03-20T15:36:37.0681197+05:30"
+  },
+  {
+    "OperationType": "Conversion",
+    "InputDetails": "12 Inches to Feet",
+    "Result": "1 ft",
+    "Timestamp": "2026-03-23T14:17:52.9965005+05:30"
+  },
+  {
+    "OperationType": "Comparison",
+    "InputDetails": "12 Inches == 1 Feet",
+    "Result": "True",
+    "Timestamp": "2026-03-23T14:31:06.9447225+05:30"
+  },
+  {
+    "OperationType": "Addition",
+    "InputDetails": "10 Litre \u002B 10 Gallon",
+    "Result": "47.85 L",
+    "Timestamp": "2026-03-24T12:35:53.9119018+05:30"
+  },
+  {
+    "OperationType": "Conversion",
+    "InputDetails": "1 Feet to Inches",
+    "Result": "12 in",
+    "Timestamp": "2026-03-25T16:27:52.1794598+05:30"
+  },
+  {
+    "OperationType": "Addition",
+    "InputDetails": "1 Feet \u002B 2 Feet",
+    "Result": "36 in",
+    "Timestamp": "2026-03-25T19:16:09.4200484+05:30"
+  },
+  {
+    "OperationType": "Conversion",
+    "InputDetails": "1 Litre to Gallon",
+    "Result": "0.26 gal",
+    "Timestamp": "2026-03-30T11:17:40.7914135+05:30"
+  }
+]
