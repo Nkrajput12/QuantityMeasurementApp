@@ -178,3 +178,14 @@ UC1: Feet Measurement Equality
 3. Engineering Principle: Client-Server Architecture & RESTful Design—Demonstrating the ultimate power of N-Tier architecture. Because the Business and Data layers were perfectly decoupled in UC15/16, the entire UI could be ripped out (Console to Web API) without modifying a single line of the underlying domain logic.
 4. Branch: [feature/UC17-ASP.NET-Framework-Integration](https://github.com/Nkrajput12/QuantityMeasurementApp/tree/feature/UC17-ASP.NET-Framework-Integration)
 
+---------------------------------------------------------------------------------------------------------------------------
+🚀 Use Case 18: Security & JWT Authentication
+
+1. Objective: Secure the RESTful Web API by implementing robust user authentication and authorization. This ensures that only verified users can access the measurement engine and view their private measurement history.
+2. Key Implementation:
+   1. Authentication Controller: Introduced a new AuthController with dedicated endpoints to handle user registration (/register) and login (/login) workflows securely.
+   2. Cryptographic Password Hashing: Implemented BCrypt to securely hash and salt user passwords before storing them in the SQL database, ensuring sensitive credentials are never saved as plain text.
+   3. JWT Token Generation: Configured ASP.NET Core to issue signed JSON Web Tokens (JWT) upon successful login. The token payload embeds critical, tamper-proof user claims (such as UserId).
+   4. Endpoint Protection & User Isolation: Applied the [Authorize] attribute to the core measurement endpoints to block anonymous access. Furthermore, the application now dynamically extracts the UserId from the Bearer token to guarantee users can only query their own specific database records.
+3. Engineering Principle: Stateless Authentication & Zero Trust—Demonstrating how to secure distributed REST systems without relying on server-side sessions. Every incoming request must mathematically prove its identity using a verifiable token, completely locking down the domain logic.
+4. Branch: [feature/UC18-AuthenticationAuthorization](https://github.com/Nkrajput12/QuantityMeasurementApp/tree/feature/UC18-AuthenticationAuthorization)
